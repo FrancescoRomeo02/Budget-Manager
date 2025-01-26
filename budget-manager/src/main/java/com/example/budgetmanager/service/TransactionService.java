@@ -6,40 +6,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TransactionService {
 
-    @Autowired
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
-    // Metodo per aggiungere una transazione
+    // Constructor injection
+    @Autowired
+    public TransactionService(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
+
     public Transaction addTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 
-    // Metodo per ottenere tutte le transazioni
+    public Transaction getTransactionById(Long id) {
+        return transactionRepository.findById(id).orElse(null);
+    }
+
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }
 
-    // Metodo per ottenere una transazione per ID
-    public Optional<Transaction> getTransactionById(Long id) {
-        return transactionRepository.findById(id);
-    }
-
-    // Metodo per ottenere il saldo complessivo
-    public Double getBalance() {
-        List<Transaction> transactions = transactionRepository.findAll();
-        double balance = 0.0;
-        for (Transaction transaction : transactions) {
-            if (transaction.getType() == Transaction.TransactionType.INCOME) {
-                balance += transaction.getAmount();
-            } else {
-                balance -= transaction.getAmount();
-            }
-        }
-        return balance;
+    public double getBalance() {
+        return transactionRepository.findAll().stream()
+                .mapToDouble(transaction -> transaction.getType() == Transaction.TransactionType.INCOME ? transaction.getAmount() : -transaction.getAmount())
+                .sum();
     }
 }

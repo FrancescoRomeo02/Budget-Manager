@@ -33,7 +33,7 @@ public class TransactionController {
     // Ottenere una transazione per ID
     @GetMapping("/{id}")
     public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
-        Optional<Transaction> transaction = transactionService.getTransactionById(id);
+        Optional<Transaction> transaction = Optional.ofNullable(transactionService.getTransactionById(id));
         return transaction.map(ResponseEntity::ok)
                          .orElseGet(() -> ResponseEntity.notFound().build());
     }

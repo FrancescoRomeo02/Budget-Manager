@@ -1,0 +1,1 @@
+La view non è stata implementata essendo richiesto il solo backend.
