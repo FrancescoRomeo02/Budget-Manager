@@ -18,7 +18,6 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    // Costruttori, getter e setter
 
     public Transaction() {
     }
@@ -82,6 +81,6 @@ public class Transaction {
 
     // Enum per definire il tipo di transazione
     public enum TransactionType {
-        INCOME, EXPENSE
+        ENTRATA, USCITA
     }
 }

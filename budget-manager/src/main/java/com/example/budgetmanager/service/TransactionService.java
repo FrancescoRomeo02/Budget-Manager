@@ -32,7 +32,15 @@ public class TransactionService {
 
     public double getBalance() {
         return transactionRepository.findAll().stream()
-                .mapToDouble(transaction -> transaction.getType() == Transaction.TransactionType.INCOME ? transaction.getAmount() : -transaction.getAmount())
+                .mapToDouble(transaction -> transaction.getType() == Transaction.TransactionType.ENTRATA ? transaction.getAmount() : -transaction.getAmount())
                 .sum();
+    }
+
+    public boolean deleteTransaction(Long id) {
+        if (transactionRepository.existsById(id)) {
+            transactionRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

@@ -31,7 +31,7 @@ public class TransactionControllerTest {
         Transaction transaction = new Transaction();
         transaction.setId(1L);
         transaction.setAmount(100.0);
-        transaction.setType(Transaction.TransactionType.INCOME);
+        transaction.setType(Transaction.TransactionType.ENTRATA);
 
         // Simulazione del comportamento del servizio
         when(transactionService.addTransaction(Mockito.any(Transaction.class))).thenReturn(transaction);
@@ -39,10 +39,10 @@ public class TransactionControllerTest {
         // Test della richiesta POST
         mockMvc.perform(post("/api/transactions")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"amount\": 100.0, \"type\": \"INCOME\"}"))
+                .content("{\"amount\": 100.0, \"type\": \"ENTRATA\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.amount").value(100.0))
-                .andExpect(jsonPath("$.type").value("INCOME"));
+                .andExpect(jsonPath("$.type").value("ENTRATA"));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class TransactionControllerTest {
         // Dati non validi (importo negativo)
         mockMvc.perform(post("/api/transactions")
                 .contentType("application/json")
-                .content("{\"amount\": -50.0, \"type\": \"INCOME\"}"))
+                .content("{\"amount\": -50.0, \"type\": \"ENTRATA\"}"))
                 .andExpect(status().isBadRequest()); // Aspettati un errore
     }
 
