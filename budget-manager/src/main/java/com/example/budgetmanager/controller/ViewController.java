@@ -4,6 +4,7 @@ import com.example.budgetmanager.model.Transaction;
 import com.example.budgetmanager.service.TransactionService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,24 @@ public class ViewController {
 
     @GetMapping("/")
     public String homePage(Model model) {
-        model.addAttribute("saldo", transactionService.getBalance());
+        double saldo = transactionService.getBalance();
+        List<Transaction> Transazioni = transactionService.getAllTransactions();
+        double totaleEntrate = 0;
+        double totaleUscite = 0;
+        for (Transaction t : Transazioni) {
+            if (t.getType() == Transaction.TransactionType.ENTRATA) {
+                totaleEntrate += t.getAmount();
+            } else {
+                totaleUscite += t.getAmount();
+            }
+        }
+
+        List<Transaction> ultimeTransazioni = Transazioni.subList(0, Math.min(Transazioni.size(), 5));
+
+        model.addAttribute("saldo", saldo);
+        model.addAttribute("totaleEntrate", totaleEntrate);
+        model.addAttribute("totaleUscite", totaleUscite);
+        model.addAttribute("ultimeTransazioni", ultimeTransazioni);
         return "index";
     }
 
