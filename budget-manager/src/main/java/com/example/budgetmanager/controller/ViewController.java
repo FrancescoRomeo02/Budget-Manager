@@ -43,7 +43,12 @@ public class ViewController {
     @GetMapping("/transactions")
     public String transactionsPage(Model model) {
         model.addAttribute("transactions", transactionService.getAllTransactions());
-        return "transactions";
+        return "view_transactions";
+    }
+
+    @GetMapping("/add_transactions")
+    public String addTransactionPage() {
+        return "add_transaction";
     }
 
     @PostMapping("/transactions/add")
