@@ -109,6 +109,6 @@ public class Transaction {
 
     // Enum per definire il tipo di transazione
     public enum TransactionType {
-        ENTRATA, USCITA
+        INCOME, OUTCOME
     }
 }

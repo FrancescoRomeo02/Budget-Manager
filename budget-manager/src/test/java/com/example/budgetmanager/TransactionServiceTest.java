@@ -34,7 +34,7 @@ public class TransactionServiceTest {
         Transaction transaction = new Transaction();
         transaction.setId(1L);
         transaction.setAmount(100.0);
-        transaction.setType(Transaction.TransactionType.ENTRATA);
+        transaction.setType(Transaction.TransactionType.INCOME);
         
         // Mock del comportamento di save
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
@@ -45,7 +45,7 @@ public class TransactionServiceTest {
         // Asserzioni
         assertNotNull(savedTransaction);
         assertEquals(100.0, savedTransaction.getAmount());
-        assertEquals(Transaction.TransactionType.ENTRATA, savedTransaction.getType());
+        assertEquals(Transaction.TransactionType.INCOME, savedTransaction.getType());
 
         // Verifica che save sia stato chiamato una volta
         verify(transactionRepository, times(1)).save(transaction);
@@ -57,12 +57,12 @@ public class TransactionServiceTest {
         Transaction t1 = new Transaction();
         t1.setId(1L);
         t1.setAmount(100.0);
-        t1.setType(Transaction.TransactionType.ENTRATA);
+        t1.setType(Transaction.TransactionType.INCOME);
         
         Transaction t2 = new Transaction();
         t2.setId(2L);
         t2.setAmount(50.0);
-        t2.setType(Transaction.TransactionType.USCITA);
+        t2.setType(Transaction.TransactionType.OUTCOME);
         
         List<Transaction> transactions = Arrays.asList(t1, t2);
 
@@ -75,9 +75,9 @@ public class TransactionServiceTest {
         // Asserzioni
         assertEquals(2, result.size());
         assertEquals(100.0, result.get(0).getAmount());
-        assertEquals(Transaction.TransactionType.ENTRATA, result.get(0).getType());
+        assertEquals(Transaction.TransactionType.INCOME, result.get(0).getType());
         assertEquals(50.0, result.get(1).getAmount());
-        assertEquals(Transaction.TransactionType.USCITA, result.get(1).getType());
+        assertEquals(Transaction.TransactionType.OUTCOME, result.get(1).getType());
 
         // Verifica che findAll sia stato chiamato una volta
         verify(transactionRepository, times(1)).findAll();
@@ -89,19 +89,19 @@ public class TransactionServiceTest {
         Transaction t1 = new Transaction();
         t1.setId(1L);
         t1.setAmount(100.0);
-        t1.setType(Transaction.TransactionType.ENTRATA);
+        t1.setType(Transaction.TransactionType.INCOME);
         
         Transaction t2 = new Transaction();
         t2.setId(2L);
         t2.setAmount(50.0);
-        t2.setType(Transaction.TransactionType.USCITA);
+        t2.setType(Transaction.TransactionType.OUTCOME);
 
         List<Transaction> transactions = Arrays.asList(t1, t2);
 
         // Mock del comportamento di findAll
         when(transactionRepository.findAll()).thenReturn(transactions);
         
-        // Test del saldo
+        // Test del balance
         double balance = transactionService.getBalance();
 
         // Asserzioni
@@ -116,7 +116,7 @@ public class TransactionServiceTest {
         // Mock del comportamento con lista vuota
         when(transactionRepository.findAll()).thenReturn(Collections.emptyList());
         
-        // Verifica che il saldo sia zero
+        // Verifica che il balance sia zero
         assertEquals(0.0, transactionService.getBalance());
     }
 }

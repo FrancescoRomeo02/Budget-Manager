@@ -24,55 +24,37 @@ public class ViewController {
     public String homePage(Model model) {
         List<Transaction> transactions = transactionService.getAllTransactions();
 
-        double saldo = transactionService.getBalance();
-        double totaleEntrate = transactions.stream()
-                                           .filter(t -> t.getType() == Transaction.TransactionType.ENTRATA)
-                                           .mapToDouble(Transaction::getAmount)
-                                           .sum();
-        
-        double totaleUscite = transactions.stream()
-                                          .filter(t -> t.getType() == Transaction.TransactionType.USCITA)
-                                          .mapToDouble(Transaction::getAmount)
-                                          .sum();
-
-        // Preleva le ultime 5 transazioni (se esistono)
-        List<Transaction> ultimeTransazioni = transactions.size() > 5 
-                ? transactions.subList(0, 5) 
-                : transactions;
+        double balance = transactionService.getBalance();
+        double totalRevenue = transactionService.getTotalRevenue();
+        double totalExpenses = transactionService.getTotalExpenses();
 
         // Attributi per la view
-        model.addAttribute("saldo", saldo);
-        model.addAttribute("totaleEntrate", totaleEntrate);
-        model.addAttribute("totaleUscite", totaleUscite);
-        model.addAttribute("ultimeTransazioni", ultimeTransazioni);
+        model.addAttribute("balance", balance);
+        model.addAttribute("totalRevenue", totalRevenue);
+        model.addAttribute("totalExpenses", totalExpenses);
+        model.addAttribute("latestTransactions", transactions.subList(0, Math.min(transactions.size(), 10)));
 
         return "index";
     }
 
     @GetMapping("/transactions")
     public String transactionsPage(Model model) {
+        
+        // Dati per la tabella
         List<Transaction> transactions = transactionService.getAllTransactions();
         model.addAttribute("transactions", transactions);
 
-        // Dati per il grafico a torta (distribuzione per categoria)
-        Map<String, Double> categoryData = transactionService.getCategorySummary();
+        // Dati per il grafico a torta (distribuzione per categoria solo delle spese)
+        Map<String, Double> categoryData = transactionService.getOutcomeCategorySummary();
         model.addAttribute("categories", categoryData.keySet());
         model.addAttribute("categoryAmounts", categoryData.values());
 
+        // Dati per il riepilogo
+        double totalRevenue = transactionService.getTotalRevenue();
+        double totalExpenses = transactionService.getTotalExpenses();
 
-        // Calcolo di entrate e uscite
-        double totaleEntrate = categoryData.entrySet().stream()
-                .filter(entry -> entry.getValue() > 0)
-                .mapToDouble(Map.Entry::getValue)
-                .sum();
-
-        double totaleUscite = categoryData.entrySet().stream()
-                .filter(entry -> entry.getValue() < 0)
-                .mapToDouble(Map.Entry::getValue)
-                .sum();
-
-        model.addAttribute("totaleEntrate", totaleEntrate);
-        model.addAttribute("totaleUscite", totaleUscite);
+        model.addAttribute("totalRevenue", totalRevenue);
+        model.addAttribute("totalExpenses", totalExpenses);
 
         // Dati per il bilancio
         model.addAttribute("balance", transactionService.getBalance());

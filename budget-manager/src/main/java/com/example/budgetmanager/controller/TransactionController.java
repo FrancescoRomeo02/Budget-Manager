@@ -12,13 +12,15 @@ import java.util.List;
 @RequestMapping("/api/transactions")
 public class TransactionController {
 
+    // Servizio che gestisce la logica delle transazioni
     private final TransactionService transactionService;
 
     public TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 
-    // Aggiungere una nuova transazione
+    // Endpoint per creare una nuova transazione
+    // Assicura la validazione dell'input verificando che l'importo e il tipo siano presenti
     @PostMapping
     public ResponseEntity<?> addTransaction(@RequestBody Transaction transaction) {
         if (transaction.getAmount() == null || transaction.getType() == null) {
@@ -35,13 +37,11 @@ public class TransactionController {
         if (transactions.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
-        // Oridino le transazioni per data
-        transactions.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate()));
         
         return ResponseEntity.ok(transactions);
     }
 
-    // Ottenere una transazione per ID
+    // Ottenere una transazione per ID 
     @GetMapping("/{id}")
     public ResponseEntity<?> getTransactionById(@PathVariable Long id) {
         return transactionService.getTransactionById(id)
@@ -49,7 +49,8 @@ public class TransactionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Ottenere il saldo complessivo
+    // Ottenere il balance complessivo
+    // Questo endpoint calcola e restituisce il balance attuale basato sulle transazioni memorizzate
     @GetMapping("/balance")
     public ResponseEntity<Double> getBalance() {
         double balance = transactionService.getBalance();
@@ -57,6 +58,7 @@ public class TransactionController {
     }
 
     // Gestione delle eccezioni generali
+    // Questo handler intercetta IllegalArgumentException, ad esempio quando vengono forniti dati non validi nelle richieste
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body("Errore: " + ex.getMessage());

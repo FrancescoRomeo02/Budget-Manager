@@ -33,14 +33,14 @@ public class TransactionService {
 
     // Recupera tutte le transazioni
     public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+        List<Transaction> transactions = transactionRepository.findAll();
+        transactions.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate()));
+        return transactions;
     }
 
-    // Calcola il saldo totale
+    // Calcola il balance totale
     public double getBalance() {
-        return transactionRepository.findAll().stream()
-                .mapToDouble(this::calculateAmount)
-                .sum();
+        return getTotalRevenue() - getTotalExpenses();
     }
 
     // Elimina una transazione per ID
@@ -53,28 +53,28 @@ public class TransactionService {
     }
 
     // Ottieni un riepilogo per categoria
-    public Map<String, Double> getCategorySummary() {
-        return transactionRepository.findAll().stream()
-                .collect(Collectors.groupingBy(
-                        Transaction::getCategory,
-                        Collectors.summingDouble(this::calculateAmount)
-                ));
+    public Map<String, Double> getOutcomeCategorySummary() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+            .filter(t -> t.getType() == Transaction.TransactionType.OUTCOME)
+            .collect(Collectors.groupingBy(Transaction::getCategory, Collectors.summingDouble(Transaction::getAmount)));
     }
 
-    // Ottieni le etichette delle date in ordine
-    public List<String> getDateLabels() {
-        return transactionRepository.findAll().stream()
-                .map(Transaction::getDate)
-                .distinct()
-                .sorted()
-                .map(java.time.LocalDate::toString)
-                .collect(Collectors.toList());
-    }
 
-    // Metodo privato per calcolare l'importo in base al tipo di transazione
-    private double calculateAmount(Transaction transaction) {
-        return transaction.getType() == Transaction.TransactionType.ENTRATA
-                ? transaction.getAmount()
-                : -transaction.getAmount();
+    public double getTotalRevenue() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+            .filter(t -> t.getType() == Transaction.TransactionType.INCOME)
+            .mapToDouble(Transaction::getAmount)
+            .sum();
     }
+    
+    public double getTotalExpenses() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+            .filter(t -> t.getType() == Transaction.TransactionType.OUTCOME)
+            .mapToDouble(Transaction::getAmount)
+            .sum();
+    }
+    
 }

@@ -1,12 +1,12 @@
 
 # Budget Manager
 
-**Budget Manager** è un'applicazione Java progettata per aiutare gli utenti a gestire il proprio budget personale, permettendo loro di registrare transazioni, monitorare entrate e uscite, e calcolare il saldo attuale in tempo reale. Utilizza Spring Boot per il backend, H2 come database in memoria e supporta operazioni di base come l'aggiunta di transazioni e il calcolo del saldo.
+**Budget Manager** è un'applicazione Java progettata per aiutare gli utenti a gestire il proprio budget personale, permettendo loro di registrare transazioni, monitorare entrate e uscite, e calcolare il balance attuale in tempo reale. Utilizza Spring Boot per il backend, H2 come database in memoria e supporta operazioni di base come l'aggiunta di transazioni e il calcolo del balance.
 
 ## Features
 
-- **Aggiunta di transazioni**: Gli utenti possono inserire transazioni di tipo entrata o uscita con un importo specificato.
-- **Calcolo del saldo**: Il sistema calcola automaticamente il saldo in tempo reale sommando tutte le entrate e sottraendo le uscite.
+- **Aggiunta di transazioni**: Gli utenti possono inserire transazioni di tipo income o outcome con un importo specificato.
+- **Calcolo del balance**: Il sistema calcola automaticamente il balance in tempo reale sommando tutte le entrate e sottraendo le uscite.
 - **Visualizzazione delle transazioni**: È possibile visualizzare tutte le transazioni registrate.
 - **Database H2**: Il progetto utilizza H2 come database in memoria per la gestione delle transazioni.
 
@@ -60,9 +60,9 @@ L'applicazione espone alcune API REST per gestire le transazioni:
     ```
   - **Risposta**: Stato HTTP 201 (Created)
 
-- **Visualizzare il saldo**:
+- **Visualizzare il balance**:
   - **URL**: `GET /api/transactions/balance`
-  - **Risposta**: Stato HTTP 200 (OK) con il saldo attuale.
+  - **Risposta**: Stato HTTP 200 (OK) con il balance attuale.
 
 - **Visualizzare tutte le transazioni**:
   - **URL**: `GET /api/transactions`
