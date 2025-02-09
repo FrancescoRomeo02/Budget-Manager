@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -18,29 +21,60 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
+    // Aggiunge una transazione
     public Transaction addTransaction(Transaction transaction) {
         return transactionRepository.save(transaction);
     }
 
-    public Transaction getTransactionById(Long id) {
-        return transactionRepository.findById(id).orElse(null);
+    // Recupera una transazione per ID
+    public Optional<Transaction> getTransactionById(Long id) {
+        return transactionRepository.findById(id);
     }
 
+    // Recupera tutte le transazioni
     public List<Transaction> getAllTransactions() {
         return transactionRepository.findAll();
     }
 
+    // Calcola il saldo totale
     public double getBalance() {
         return transactionRepository.findAll().stream()
-                .mapToDouble(transaction -> transaction.getType() == Transaction.TransactionType.ENTRATA ? transaction.getAmount() : -transaction.getAmount())
+                .mapToDouble(this::calculateAmount)
                 .sum();
     }
 
+    // Elimina una transazione per ID
     public boolean deleteTransaction(Long id) {
         if (transactionRepository.existsById(id)) {
             transactionRepository.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    // Ottieni un riepilogo per categoria
+    public Map<String, Double> getCategorySummary() {
+        return transactionRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        Transaction::getCategory,
+                        Collectors.summingDouble(this::calculateAmount)
+                ));
+    }
+
+    // Ottieni le etichette delle date in ordine
+    public List<String> getDateLabels() {
+        return transactionRepository.findAll().stream()
+                .map(Transaction::getDate)
+                .distinct()
+                .sorted()
+                .map(java.time.LocalDate::toString)
+                .collect(Collectors.toList());
+    }
+
+    // Metodo privato per calcolare l'importo in base al tipo di transazione
+    private double calculateAmount(Transaction transaction) {
+        return transaction.getType() == Transaction.TransactionType.ENTRATA
+                ? transaction.getAmount()
+                : -transaction.getAmount();
     }
 }

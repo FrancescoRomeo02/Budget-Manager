@@ -18,11 +18,6 @@
         <!-- Titolo e Saldo -->
         <div class="text-center">
             <h1 class="display-4">Gestione Budget</h1>
-            <p class="fs-4">
-                Saldo attuale: 
-                <span class="fw-bold" th:text="${#numbers.formatDecimal(saldo, 1, 2)}" 
-                      th:classappend="${saldo < 0 ? 'text-danger' : 'text-success'}">0.00</span> €
-            </p>
             <a href="/add_transactions" class="btn btn-success btn-lg">+ Aggiungi Transazione</a>
             <a href="/transactions" class="btn btn-primary btn-lg">Visualizza tutte le transazioni</a>
         </div>

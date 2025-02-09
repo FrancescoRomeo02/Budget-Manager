@@ -3,46 +3,83 @@ package com.example.budgetmanager.controller;
 import com.example.budgetmanager.model.Transaction;
 import com.example.budgetmanager.service.TransactionService;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/")
 public class ViewController {
 
-    @Autowired
-    private TransactionService transactionService;
+    private final TransactionService transactionService;
 
-    @GetMapping("/")
+    public ViewController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+
+    @GetMapping
     public String homePage(Model model) {
+        List<Transaction> transactions = transactionService.getAllTransactions();
+
         double saldo = transactionService.getBalance();
-        List<Transaction> Transazioni = transactionService.getAllTransactions();
-        double totaleEntrate = 0;
-        double totaleUscite = 0;
-        for (Transaction t : Transazioni) {
-            if (t.getType() == Transaction.TransactionType.ENTRATA) {
-                totaleEntrate += t.getAmount();
-            } else {
-                totaleUscite += t.getAmount();
-            }
-        }
+        double totaleEntrate = transactions.stream()
+                                           .filter(t -> t.getType() == Transaction.TransactionType.ENTRATA)
+                                           .mapToDouble(Transaction::getAmount)
+                                           .sum();
+        
+        double totaleUscite = transactions.stream()
+                                          .filter(t -> t.getType() == Transaction.TransactionType.USCITA)
+                                          .mapToDouble(Transaction::getAmount)
+                                          .sum();
 
-        List<Transaction> ultimeTransazioni = Transazioni.subList(0, Math.min(Transazioni.size(), 5));
+        // Preleva le ultime 5 transazioni (se esistono)
+        List<Transaction> ultimeTransazioni = transactions.size() > 5 
+                ? transactions.subList(0, 5) 
+                : transactions;
 
+        // Ordina le transazioni per data decrescente
+        ultimeTransazioni.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate()));
+
+        // Attributi per la view
         model.addAttribute("saldo", saldo);
         model.addAttribute("totaleEntrate", totaleEntrate);
         model.addAttribute("totaleUscite", totaleUscite);
         model.addAttribute("ultimeTransazioni", ultimeTransazioni);
+
         return "index";
     }
 
     @GetMapping("/transactions")
     public String transactionsPage(Model model) {
-        model.addAttribute("transactions", transactionService.getAllTransactions());
+        List<Transaction> transactions = transactionService.getAllTransactions();
+        model.addAttribute("transactions", transactions);
+
+        // Dati per il grafico a torta (distribuzione per categoria)
+        Map<String, Double> categoryData = transactionService.getCategorySummary();
+        model.addAttribute("categories", categoryData.keySet());
+        model.addAttribute("categoryAmounts", categoryData.values());
+
+
+        // Calcolo di entrate e uscite
+        double totaleEntrate = categoryData.entrySet().stream()
+                .filter(entry -> entry.getValue() > 0)
+                .mapToDouble(Map.Entry::getValue)
+                .sum();
+
+        double totaleUscite = categoryData.entrySet().stream()
+                .filter(entry -> entry.getValue() < 0)
+                .mapToDouble(Map.Entry::getValue)
+                .sum();
+
+        model.addAttribute("totaleEntrate", totaleEntrate);
+        model.addAttribute("totaleUscite", totaleUscite);
+
+        // Dati per il bilancio
+        model.addAttribute("balance", transactionService.getBalance());
+
         return "view_transactions";
     }
 
@@ -52,27 +89,14 @@ public class ViewController {
     }
 
     @PostMapping("/transactions/add")
-    public String addTransaction(@RequestParam("type") String type,
-                                  @RequestParam("amount") double amount,
-                                  @RequestParam("description") String description, 
-                                  @RequestParam("date") LocalDate date, 
-                                  @RequestParam("category") String category) {
-        Transaction transaction = new Transaction();
-
-        transaction.setType(Transaction.TransactionType.valueOf(type));
-        transaction.setAmount(amount);
-        transaction.setDescription(description);
-        transaction.setDate(date);
-        transaction.setCategory(category);
+    public String addTransaction(@ModelAttribute Transaction transaction) {
         transactionService.addTransaction(transaction);
         return "redirect:/transactions";
     }
 
-    @PostMapping("/transactions/delete/")
+    @PostMapping("/transactions/delete")
     public String deleteTransaction(@RequestParam("id") Long id) {
-        System.out.println("Deleting transaction with id: " + id);
         transactionService.deleteTransaction(id);
         return "redirect:/transactions";
     }
-    
 }
