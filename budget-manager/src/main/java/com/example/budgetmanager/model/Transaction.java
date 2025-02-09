@@ -7,6 +7,7 @@ import java.time.LocalDate;
 @Entity
 public class Transaction {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -50,7 +51,7 @@ public class Transaction {
     }
 
     public void setAmount(Double amount) {
-        validateAmount(amount, this.type); // Validazione in setter
+        validateAmount(amount, this.type); 
         this.amount = amount;
     }
 
@@ -59,7 +60,7 @@ public class Transaction {
     }
 
     public void setCategory(String category) {
-        validateCategory(category); // Validazione in setter
+        validateCategory(category); 
         this.category = category;
     }
 
@@ -76,7 +77,7 @@ public class Transaction {
     }
 
     public void setDate(LocalDate date) {
-        validateDate(date); // Validazione in setter
+        validateDate(date);
         this.date = date;
     }
 
@@ -91,19 +92,19 @@ public class Transaction {
     // Metodi di validazione
     private void validateAmount(Double amount, TransactionType type) {
         if (amount == null || amount == 0) {
-            throw new IllegalArgumentException("L'importo non può essere nullo o zero.");
+            throw new IllegalArgumentException("The amout can't be 0 or null.");
         }
     }
 
     private void validateCategory(String category) {
         if (category == null || category.trim().isEmpty()) {
-            throw new IllegalArgumentException("La categoria non può essere nulla o vuota.");
+            throw new IllegalArgumentException("The category can't be null or empty.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("La data non può essere nulla.");
+            throw new IllegalArgumentException("The date can't be null.");
         }
     }
 

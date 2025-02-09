@@ -34,7 +34,10 @@ public class TransactionService {
     // Recupera tutte le transazioni
     public List<Transaction> getAllTransactions() {
         List<Transaction> transactions = transactionRepository.findAll();
+
+        // Ordina le transazioni per data decrescente
         transactions.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate()));
+        
         return transactions;
     }
 

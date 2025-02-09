@@ -15,24 +15,24 @@
     </nav>
 
     <div class="container mt-5">
-        <!-- Titolo e balance -->
+        <!-- Titolo e bilancio -->
         <div class="text-center">
-            <h1 class="display-4">Gestione Budget</h1>
-            <a href="/add_transactions" class="btn btn-success btn-lg">+ Aggiungi Transazione</a>
-            <a href="/transactions" class="btn btn-primary btn-lg">Visualizza tutte le transazioni</a>
+            <h1 class="display-4">💸 Budget Management</h1>
+            <a href="/add_transactions" class="btn btn-success btn-lg">+ Add Transaction</a>
+            <a href="/transactions" class="btn btn-primary btn-lg">View All Transactions</a>
         </div>
 
-        <!-- Messaggio di Avviso se il balance è negativo -->
+        <!-- messaggio di allerta -->
         <div th:if="${balance < 0}" class="alert alert-danger mt-4 text-center" role="alert">
-            ⚠️ Attenzione! Il tuo balance è negativo.
+            ⚠️ Warning! Your balance is negative.
         </div>
 
-        <!-- Statistiche rapide -->
+        <!-- alcune statistiche -->
         <div class="row text-center mt-5">
             <div class="col-md-4">
                 <div class="card border-success">
                     <div class="card-body">
-                        <h5 class="card-title text-success">Entrate</h5>
+                        <h5 class="card-title text-success">Income</h5>
                         <p class="fs-3 fw-bold text-success" th:text="${#numbers.formatDecimal(totalRevenue, 1, 2)}">0.00</p>
                     </div>
                 </div>
@@ -40,7 +40,7 @@
             <div class="col-md-4">
                 <div class="card border-danger">
                     <div class="card-body">
-                        <h5 class="card-title text-danger">Uscite</h5>
+                        <h5 class="card-title text-danger">Expenses</h5>
                         <p class="fs-3 fw-bold text-danger" th:text="${#numbers.formatDecimal(totalExpenses, 1, 2)}">0.00</p>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
             <div class="col-md-4">
                 <div class="card" th:classappend="${balance<=0 ? 'border-danger' : 'border-success'}">
                     <div class="card-body">
-                        <h5 class="card-title">balance Netto</h5>
+                        <h5 class="card-title">Net Balance</h5>
                         <p class="fs-3 fw-bold" th:text="${#numbers.formatDecimal(balance, 1, 2)}" 
                            th:classappend="${balance < 0 ? 'text-danger' : 'text-success'}">0.00</p>
                     </div>
@@ -57,28 +57,28 @@
         </div>
 
         <!-- Ultime transazioni -->
-        <h2 class="mt-5">Ultime Transazioni</h2>
+        <h2 class="mt-5">Latest Transactions</h2>
         <table class="table table-striped mt-3">
             <thead class="table-dark">
                 <tr>
-                    <th>Data</th>
-                    <th>Categoria</th>
-                    <th>Descrizione</th>
-                    <th>Importo</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Amount</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="transaction : ${latestTransactions}">
                     <td th:text="${transaction.date}">01/01/2024</td>
-                    <td th:text="${transaction.category}">Categoria</td>
-                    <td th:text="${transaction.description}">Descrizione</td>
+                    <td th:text="${transaction.category}">Category</td>
+                    <td th:text="${transaction.description}">Description</td>
                     <td th:text="${#numbers.formatDecimal(transaction.amount, 1, 2)}" 
                         th:classappend="${transaction.type.name() == 'OUTCOME' ? 'text-danger' : 'text-success'}">
                         0.00
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(latestTransactions)}">
-                    <td colspan="4" class="text-center">Nessuna transazione disponibile</td>
+                    <td colspan="4" class="text-center">No transactions available</td>
                 </tr>
             </tbody>
         </table>

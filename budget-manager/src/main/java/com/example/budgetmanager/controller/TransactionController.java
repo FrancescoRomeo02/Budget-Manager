@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Controller per gestire le richieste API relative alle transazioni 
+// In disuso dopo lo sviluppo del frontend
+
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
@@ -24,7 +27,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<?> addTransaction(@RequestBody Transaction transaction) {
         if (transaction.getAmount() == null || transaction.getType() == null) {
-            return ResponseEntity.badRequest().body("Errore: importo e tipo di transazione sono obbligatori.");
+            return ResponseEntity.badRequest().body("Error: amount and type are mandatory.");
         }
         Transaction savedTransaction = transactionService.addTransaction(transaction);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
@@ -61,6 +64,6 @@ public class TransactionController {
     // Questo handler intercetta IllegalArgumentException, ad esempio quando vengono forniti dati non validi nelle richieste
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest().body("Errore: " + ex.getMessage());
+        return ResponseEntity.badRequest().body("Error: " + ex.getMessage());
     }
 }
