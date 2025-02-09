@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Controller
 @RequestMapping("/")
@@ -78,4 +79,12 @@ public class ViewController {
         transactionService.deleteTransaction(id);
         return "redirect:/transactions";
     }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public String handleNotFound(NoHandlerFoundException ex, Model model) {
+        model.addAttribute("message", "La pagina che stai cercando non è stata trovata.");
+        return "error"; // La view 404.html
+    }
+
+
 }
