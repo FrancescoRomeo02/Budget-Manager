@@ -40,9 +40,6 @@ public class ViewController {
                 ? transactions.subList(0, 5) 
                 : transactions;
 
-        // Ordina le transazioni per data decrescente
-        ultimeTransazioni.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate()));
-
         // Attributi per la view
         model.addAttribute("saldo", saldo);
         model.addAttribute("totaleEntrate", totaleEntrate);

@@ -16,7 +16,7 @@
     </nav>
 
     <div class="container mt-5">
-        <h1 class="text-center">Lista Transazioni</h1>
+        <h1 class="text-center">Resoconto delle Spese</h1>
 
         <!-- Sezione Grafici -->
         <div class="container mt-4">
@@ -58,6 +58,9 @@
                                 <button type="submit" class="btn btn-danger btn-sm">Elimina</button>
                             </form>
                         </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(transactions)}">
+                        <td colspan="6" class="text-center">Nessuna transazione disponibile</td>
                     </tr>
                 </tbody>
             </table>

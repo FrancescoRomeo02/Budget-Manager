@@ -35,6 +35,9 @@ public class TransactionController {
         if (transactions.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
+        // Oridino le transazioni per data
+        transactions.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate()));
+        
         return ResponseEntity.ok(transactions);
     }
 
