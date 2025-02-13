@@ -83,7 +83,7 @@ public class TransactionsViewController {
     public String addTransaction(@ModelAttribute Transaction transaction) {
         transactionService.addTransaction(transaction);
 
-        // Redirect alla pagina delle transazioni
+        // Redirect alla pagina delle transazioni (uso redirect per evitare di aggiungere la stessa transazione più volte)
         return "redirect:/transactions";
     }
 
@@ -91,7 +91,7 @@ public class TransactionsViewController {
     public String deleteTransaction(@RequestParam("id") Long id) {
         transactionService.deleteTransaction(id);
 
-        // Redirect alla pagina delle transazioni
+        // Redirect alla pagina delle transazioni (uso redirect per evitare di provare ad eliminare la stessa transazione più volte)
         return "redirect:/transactions";
     }
 
