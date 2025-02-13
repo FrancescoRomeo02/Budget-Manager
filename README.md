@@ -205,6 +205,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 }
 ```
 Il repository contiene alcune query personalizzate per ottenere il totale delle entrate, il totale delle spese e un riepilogo per categoria delle spese in modo da semplificare la logica di business.
+
 ---
 
 ## Flusso delle Richieste HTTP
