@@ -1,7 +1,7 @@
 # Budget Manager
 
 ## Introduzione
-Budget Manager è un'applicazione web sviluppata in **Java** con **Spring Boot** per la gestione delle finanze personali. Permette agli utenti di **registrare transazioni**, **monitorare entrate e uscite** e **visualizzare il saldo** in tempo reale.
+Budget Manager è un'applicazione web sviluppata in **Java** con **Spring Boot** per la gestione delle finanze personali. Permette di **registrare transazioni**, **monitorare entrate e uscite** e **visualizzare il saldo** in tempo reale.
 
 ## Tecnologie Utilizzate
 - **Java 17**
@@ -29,8 +29,6 @@ budget-manager/
 │
 ├── src/main/resources/
 │   ├── templates/       # Pagine HTML con Thymeleaf
-│   ├── static/css/      # Fogli di stilen (uno per pagina)
-│   ├── static/js/       # Script JavaScript (nessuno)
 │   ├── application.properties  # Configurazione del database H2
 │
 ├── src/test/java/com/example/budgetmanager/
@@ -103,7 +101,6 @@ public class TransactionController {
 I meotodi implementati sono:
 - `addTransaction(Transaction transation)` per aggiungere una nuova transazione
 - `getAllTransactions()` per recuperare tutte le transazioni
-- `getBalance()` per recuperare il saldo
 - `deleteTransaction(Long id)` per eliminare una transazione
 - `getTransactionById(Long id)` per recuperare una transazione per id
 
@@ -141,7 +138,6 @@ I metodi implementati sono:
 - `addTransactionPage(Model model)` per la pagina di aggiunta di una transazione
 - `addTransaction(Transaction transaction)` per aggiungere una nuova transazione
 - `deleteTransaction(Long id)` per eliminare una transazione
-- `handleNotFound()` per gestire le eccezioni 404
 
 **Custom Error Controller** - `CustomErrorController.java`
 Gestisce le eccezioni che si verificano durante la navigazione.
@@ -172,21 +168,13 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
     
-    public double getTotalRevenue() {
-        List<Transaction> transactions = transactionRepository.findAll();
-        return transactions.stream()
-            .filter(t -> t.getType() == Transaction.TransactionType.INCOME)
-            .mapToDouble(Transaction::getAmount)
-            .sum();
-    }
-
-    public double getTotalExpenses() {
-        List<Transaction> transactions = transactionRepository.findAll();
-        return transactions.stream()
-            .filter(t -> t.getType() == Transaction.TransactionType.EXPENSE)
-            .mapToDouble(Transaction::getAmount)
-            .sum();
-    }
+    public Map<String, Double> getExpenseCategorySummary() {
+            return transactionRepository.getExpenseCategorySummary().stream()
+                    .collect(Collectors.toMap(
+                            obj -> (String) obj[0], 
+                            obj -> (Double) obj[1] 
+                    ));
+        }
 
 }
 ```
@@ -200,6 +188,23 @@ I metodi implementati sono:
 - `getExpensesByCategorySummary()` per recuperare le uscite per categoria
 - `deleteTransaction(Long id)` per eliminare una transazione
 
+### **Repository** - `TransactionRepository.java`
+```java
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+    // Query per ottenere il totale delle entrate
+    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.type = 'INCOME'")
+    Double getTotalRevenue();
+
+    // Query per ottenere il totale delle spese
+    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.type = 'EXPENSE'")
+    Double getTotalExpenses();
+
+    // Query per ottenere un riepilogo per categoria delle spese
+    @Query("SELECT t.category, SUM(t.amount) FROM Transaction t WHERE t.type = 'EXPENSE' GROUP BY t.category")
+    List<Object[]> getExpenseCategorySummary();
+}
+```
+Il repository contiene alcune query personalizzate per ottenere il totale delle entrate, il totale delle spese e un riepilogo per categoria delle spese in modo da semplificare la logica di business.
 ---
 
 ## Flusso delle Richieste HTTP
@@ -211,6 +216,7 @@ I metodi implementati sono:
 2. **L'utente accede alla lista transazioni (`/transactions`)**
    - `TransactionsViewController` carica tutte le transazioni.
    - `view_transactions.html` mostra la tabella + grafico a torta.
+
 2.1 **L'utente elimina una transazione**
    - `TransactionController.deleteTransaction()` elimina la transazione dal database.
    - L'utente viene reindirizzato a `/transactions`.
@@ -227,7 +233,7 @@ I metodi implementati sono:
 ## Come Eseguire il Progetto
 ### Clonare il repository
 ```sh
-git clone <repository-url>
+git clone <https://gitlab.com/f.romeo23/budget-manager>
 cd budget-manager
 ```
 
@@ -239,7 +245,6 @@ mvn spring-boot:run
 ### Accedere all'applicazione
 - **Dashboard:** [http://localhost:8080/](http://localhost:8080/)
 - **API REST:** [http://localhost:8080/api/transactions](http://localhost:8080/api/transactions)
-- **Database H2 Console:** [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
 
 ---
 
