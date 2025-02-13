@@ -57,28 +57,21 @@ public class TransactionService {
 
     // Ottieni un riepilogo per categoria delle spese
     public Map<String, Double> getExpenseCategorySummary() {
-        List<Transaction> transactions = transactionRepository.findAll();
-        return transactions.stream()
-            .filter(t -> t.getType() == Transaction.TransactionType.EXPENSE)
-            .collect(Collectors.groupingBy(Transaction::getCategory, Collectors.summingDouble(Transaction::getAmount)));
+        return transactionRepository.getExpenseCategorySummary().stream()
+                .collect(Collectors.toMap(
+                        obj -> (String) obj[0], // categoria della transazione
+                        obj -> (Double) obj[1] // somma delle spese per categoria
+                ));
     }
 
     // Calcola il totale delle entrate
     public double getTotalRevenue() {
-        List<Transaction> transactions = transactionRepository.findAll();
-        return transactions.stream()
-            .filter(t -> t.getType() == Transaction.TransactionType.INCOME)
-            .mapToDouble(Transaction::getAmount)
-            .sum();
+        return Optional.ofNullable(transactionRepository.getTotalRevenue()).orElse(0.0);
     }
 
     // Calcola il totale delle spese
     public double getTotalExpenses() {
-        List<Transaction> transactions = transactionRepository.findAll();
-        return transactions.stream()
-            .filter(t -> t.getType() == Transaction.TransactionType.EXPENSE)
-            .mapToDouble(Transaction::getAmount)
-            .sum();
+        return Optional.ofNullable(transactionRepository.getTotalExpenses()).orElse(0.0);
     }
     
 }

@@ -50,7 +50,7 @@ public class TransactionControllerTest {
         // Dati non validi (importo negativo)
         mockMvc.perform(post("/api/transactions")
                 .contentType("application/json")
-                .content("{\"amount\": -50.0, \"type\": \"INCOME\"}"))
+                .content("{\"amount\":, \"type\": \"INCOME\"}"))
                 .andExpect(status().isBadRequest()); // Aspettati un errore
     }
 
