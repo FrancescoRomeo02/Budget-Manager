@@ -217,10 +217,9 @@ Il repository contiene alcune query personalizzate per ottenere il totale delle 
 2. **L'utente accede alla lista transazioni (`/transactions`)**
    - `TransactionsViewController` carica tutte le transazioni.
    - `view_transactions.html` mostra la tabella + grafico a torta.
-
-2.1. **L'utente elimina una transazione**
-   - `TransactionController.deleteTransaction()` elimina la transazione dal database.
-   - L'utente viene reindirizzato a `/transactions`.
+   - **L'utente elimina una transazione**
+   -- `TransactionController.deleteTransaction()` elimina la transazione dal database.
+   -- L'utente viene reindirizzato a `/transactions`.
 
 3. **L'utente aggiunge una nuova transazione**
    - `TransactionController.addTransaction()` salva la transazione nel database.
