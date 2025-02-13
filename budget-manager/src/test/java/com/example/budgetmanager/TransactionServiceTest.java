@@ -3,27 +3,27 @@ package com.example.budgetmanager;
 import com.example.budgetmanager.model.Transaction;
 import com.example.budgetmanager.repository.TransactionRepository;
 import com.example.budgetmanager.service.TransactionService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.util.Arrays;
+import java.time.LocalDate;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DataJpaTest
 public class TransactionServiceTest {
 
+    @Autowired
     private TransactionRepository transactionRepository;
+
     private TransactionService transactionService;
 
     @BeforeEach
     void setUp() {
-        // Mock del repository
-        transactionRepository = Mockito.mock(TransactionRepository.class);
+        // Inizializza il servizio con il repository autowired
         transactionService = new TransactionService(transactionRepository);
     }
 
@@ -31,14 +31,10 @@ public class TransactionServiceTest {
     void testAddTransaction() {
         // Dati di esempio per una transazione
         Transaction transaction = new Transaction();
-        transaction.setId(1L);
         transaction.setAmount(100.0);
         transaction.setType(Transaction.TransactionType.INCOME);
         
-        // Mock del comportamento di save
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
-        
-        // Test del servizio
+        // Test del servizio che salva su H2
         Transaction savedTransaction = transactionService.addTransaction(transaction);
         
         // Asserzioni
@@ -46,28 +42,33 @@ public class TransactionServiceTest {
         assertEquals(100.0, savedTransaction.getAmount());
         assertEquals(Transaction.TransactionType.INCOME, savedTransaction.getType());
 
-        // Verifica che save sia stato chiamato una volta
-        verify(transactionRepository, times(1)).save(transaction);
+        // Verifica che la transazione sia effettivamente nel database
+        Transaction foundTransaction = transactionRepository.findById(savedTransaction.getId()).orElse(null);
+        assertNotNull(foundTransaction);
+        assertEquals(transaction.getAmount(), foundTransaction.getAmount());
     }
 
     @Test
     void testGetAllTransactions() {
         // Dati di esempio per le transazioni
         Transaction t1 = new Transaction();
-        t1.setId(1L);
         t1.setAmount(100.0);
+        t1.setCategory("Salary");
+        t1.setDate(LocalDate.now());
+        t1.setDescription("test");
         t1.setType(Transaction.TransactionType.INCOME);
         
         Transaction t2 = new Transaction();
-        t2.setId(2L);
         t2.setAmount(50.0);
+        t2.setCategory("Food");
+        t2.setDate(LocalDate.now());
+        t2.setDescription("test");
         t2.setType(Transaction.TransactionType.EXPENSE);
         
-        List<Transaction> transactions = Arrays.asList(t1, t2);
+        // Salvataggio nel database H2
+        transactionRepository.save(t1);
+        transactionRepository.save(t2);
 
-        // Mock del comportamento di findAll
-        when(transactionRepository.findAll()).thenReturn(transactions);
-        
         // Test del servizio
         List<Transaction> result = transactionService.getAllTransactions();
         
@@ -77,32 +78,27 @@ public class TransactionServiceTest {
         assertEquals(Transaction.TransactionType.INCOME, result.get(0).getType());
         assertEquals(50.0, result.get(1).getAmount());
         assertEquals(Transaction.TransactionType.EXPENSE, result.get(1).getType());
-
-        // Verifica che findAll sia stato chiamato una volta
-        verify(transactionRepository, times(1)).findAll();
     }
 
     @Test
     void testGetBalance() {
         // Dati di esempio per le transazioni
         Transaction t1 = new Transaction();
-        t1.setId(1L);
         t1.setAmount(100.0);
         t1.setType(Transaction.TransactionType.INCOME);
-        
+
         Transaction t2 = new Transaction();
-        t2.setId(2L);
         t2.setAmount(50.0);
         t2.setType(Transaction.TransactionType.EXPENSE);
 
-        List<Transaction> transactions = Arrays.asList(t1, t2);
+        // Salvataggio delle transazioni nel database H2
+        transactionRepository.save(t1);
+        transactionRepository.save(t2);
 
-        // Mock del comportamento di findAll
-        when(transactionRepository.findAll()).thenReturn(transactions);
-        
+        // Test del servizio
+        double balance = transactionService.getBalance();
 
-        // Verifica che findAll sia stato chiamato una volta
-        verify(transactionRepository, times(1)).findAll();
+        // Asserzioni
+        assertEquals(50.0, balance);
     }
-
 }
