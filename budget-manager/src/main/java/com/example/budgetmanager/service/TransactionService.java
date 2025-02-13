@@ -55,7 +55,7 @@ public class TransactionService {
         return false;
     }
 
-    // Ottieni un riepilogo per categoria
+    // Ottieni un riepilogo per categoria delle spese
     public Map<String, Double> getOutcomeCategorySummary() {
         List<Transaction> transactions = transactionRepository.findAll();
         return transactions.stream()
@@ -63,7 +63,7 @@ public class TransactionService {
             .collect(Collectors.groupingBy(Transaction::getCategory, Collectors.summingDouble(Transaction::getAmount)));
     }
 
-
+    // Calcola il totale delle entrate
     public double getTotalRevenue() {
         List<Transaction> transactions = transactionRepository.findAll();
         return transactions.stream()
@@ -71,7 +71,8 @@ public class TransactionService {
             .mapToDouble(Transaction::getAmount)
             .sum();
     }
-    
+
+    // Calcola il totale delle spese
     public double getTotalExpenses() {
         List<Transaction> transactions = transactionRepository.findAll();
         return transactions.stream()

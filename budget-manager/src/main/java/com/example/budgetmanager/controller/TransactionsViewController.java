@@ -11,17 +11,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-// Controller per gestire le richieste relative alle view
-// Questo controller gestisce le richieste per le pagine HTML
-// e fornisce i dati necessari per visualizzare le informazioni
+/* ------------------------------------------------------------------
+Controller per gestire le richieste relative alle view
+Questo controller gestisce le richieste per le pagine HTML e 
+fornisce i dati necessari per visualizzare le informazioni 
+------------------------------------------------------------------ */
 
 @Controller
 @RequestMapping("/")
-public class ViewController {
+public class TransactionsViewController {
 
     private final TransactionService transactionService;
 
-    public ViewController(TransactionService transactionService) {
+    public TransactionsViewController(TransactionService transactionService) {
         this.transactionService = transactionService;
     }
 

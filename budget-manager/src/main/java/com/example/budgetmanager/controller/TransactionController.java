@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// Controller per gestire le richieste API relative alle transazioni 
-// In disuso dopo lo sviluppo del frontend
+/* ------------------------------------------------------------------
+Controller per gestire le richieste API relative alle transazioni
+In disuso dopo l'implementazione del frontend.
+------------------------------------------------------------------ */
+
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -43,6 +46,16 @@ public class TransactionController {
         
         return ResponseEntity.ok(transactions);
     }
+
+    // Eliminare una transazione per ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteTransaction(@PathVariable Long id) {
+        if (transactionService.deleteTransaction(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
 
     // Ottenere una transazione per ID 
     @GetMapping("/{id}")
