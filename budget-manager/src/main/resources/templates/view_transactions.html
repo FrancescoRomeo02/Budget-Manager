@@ -49,7 +49,7 @@
                         <td th:text="${transaction.category}"></td>
                         <td>
                             <span th:text="${transaction.type}" 
-                                  th:classappend="${transaction.type.name() == 'OUTCOME' ? 'text-danger' : 'text-success'}">
+                                  th:classappend="${transaction.type.name() == 'EXPENSE' ? 'text-danger' : 'text-success'}">
                             </span>
                         </td>
                         <td>

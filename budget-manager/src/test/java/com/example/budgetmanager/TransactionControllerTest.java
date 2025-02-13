@@ -46,17 +46,6 @@ public class TransactionControllerTest {
     }
 
     @Test
-    void testGetBalance() throws Exception {
-        // Mock del servizio
-        when(transactionService.getBalance()).thenReturn(50.0);
-
-        // Test della richiesta GET
-        mockMvc.perform(get("/api/transactions/balance"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("50.0"));
-    }
-
-    @Test
     void testAddTransactionWithInvalidData() throws Exception {
         // Dati non validi (importo negativo)
         mockMvc.perform(post("/api/transactions")

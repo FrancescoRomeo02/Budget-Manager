@@ -65,14 +65,6 @@ public class TransactionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Ottenere il balance complessivo
-    // Questo endpoint calcola e restituisce il balance attuale basato sulle transazioni memorizzate
-    @GetMapping("/balance")
-    public ResponseEntity<Double> getBalance() {
-        double balance = transactionService.getBalance();
-        return ResponseEntity.ok(balance);
-    }
-
     // Gestione delle eccezioni generali
     // Questo handler intercetta IllegalArgumentException, ad esempio quando vengono forniti dati non validi nelle richieste
     @ExceptionHandler(IllegalArgumentException.class)

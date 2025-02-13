@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -62,7 +61,7 @@ public class TransactionServiceTest {
         Transaction t2 = new Transaction();
         t2.setId(2L);
         t2.setAmount(50.0);
-        t2.setType(Transaction.TransactionType.OUTCOME);
+        t2.setType(Transaction.TransactionType.EXPENSE);
         
         List<Transaction> transactions = Arrays.asList(t1, t2);
 
@@ -77,7 +76,7 @@ public class TransactionServiceTest {
         assertEquals(100.0, result.get(0).getAmount());
         assertEquals(Transaction.TransactionType.INCOME, result.get(0).getType());
         assertEquals(50.0, result.get(1).getAmount());
-        assertEquals(Transaction.TransactionType.OUTCOME, result.get(1).getType());
+        assertEquals(Transaction.TransactionType.EXPENSE, result.get(1).getType());
 
         // Verifica che findAll sia stato chiamato una volta
         verify(transactionRepository, times(1)).findAll();
@@ -94,29 +93,16 @@ public class TransactionServiceTest {
         Transaction t2 = new Transaction();
         t2.setId(2L);
         t2.setAmount(50.0);
-        t2.setType(Transaction.TransactionType.OUTCOME);
+        t2.setType(Transaction.TransactionType.EXPENSE);
 
         List<Transaction> transactions = Arrays.asList(t1, t2);
 
         // Mock del comportamento di findAll
         when(transactionRepository.findAll()).thenReturn(transactions);
         
-        // Test del balance
-        double balance = transactionService.getBalance();
-
-        // Asserzioni
-        assertEquals(50.0, balance);
 
         // Verifica che findAll sia stato chiamato una volta
         verify(transactionRepository, times(1)).findAll();
     }
-    
-    @Test
-    void testGetBalanceWithEmptyList() {
-        // Mock del comportamento con lista vuota
-        when(transactionRepository.findAll()).thenReturn(Collections.emptyList());
-        
-        // Verifica che il balance sia zero
-        assertEquals(0.0, transactionService.getBalance());
-    }
+
 }

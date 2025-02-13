@@ -1,81 +1,253 @@
-
 # Budget Manager
 
-**Budget Manager** è un'applicazione Java progettata per aiutare gli utenti a gestire il proprio budget personale, permettendo loro di registrare transazioni, monitorare entrate e uscite, e calcolare il balance attuale in tempo reale. Utilizza Spring Boot per il backend, H2 come database in memoria e supporta operazioni di base come l'aggiunta di transazioni e il calcolo del balance.
-
-## Features
-
-- **Aggiunta di transazioni**: Gli utenti possono inserire transazioni di tipo income o outcome con un importo specificato.
-- **Calcolo del balance**: Il sistema calcola automaticamente il balance in tempo reale sommando tutte le entrate e sottraendo le uscite.
-- **Visualizzazione delle transazioni**: È possibile visualizzare tutte le transazioni registrate.
-- **Database H2**: Il progetto utilizza H2 come database in memoria per la gestione delle transazioni.
+## Introduzione
+Budget Manager è un'applicazione web sviluppata in **Java** con **Spring Boot** per la gestione delle finanze personali. Permette agli utenti di **registrare transazioni**, **monitorare entrate e uscite** e **visualizzare il saldo** in tempo reale.
 
 ## Tecnologie Utilizzate
+- **Java 17**
+- **Spring Boot 3** (MVC, Data JPA)
+- **Thymeleaf** (per la parte View)
+- **H2 Database** (per la persistenza dei dati)
+- **Bootstrap 5** (UI responsiva)
+- **Chart.js** (grafico a torta per la distribuzione delle spese)
+- **JUnit 5** (test unitari e di integrazione)
 
-- **Java 17** (o superiore)
-- **Spring Boot 3.4.2**
-- **H2 Database**
-- **Spring Data JPA** per la gestione delle transazioni
-- **JUnit 5** per i test
-- **Spring Web** per le API REST
+---
 
-## Requisiti
+## Architettura del Progetto
+Il progetto segue un'architettura **MVC (Model-View-Controller)** ben strutturata.
 
-Per eseguire questo progetto, assicurati di avere:
+### **Struttura delle Cartelle**
+```
+budget-manager/
+├── src/main/java/com/example/budgetmanager/
+│   ├── controller/      # Gestisce le richieste HTTP
+│   ├── model/           # Definisce le entità del database
+│   ├── repository/      # Interfaccia per l'accesso ai dati
+│   ├── service/         # Contiene la logica di business
+│   └── BudgetManagerApplication.java  # Classe principale
+│
+├── src/main/resources/
+│   ├── templates/       # Pagine HTML con Thymeleaf
+│   ├── static/css/      # Fogli di stilen (uno per pagina)
+│   ├── static/js/       # Script JavaScript (nessuno)
+│   ├── application.properties  # Configurazione del database H2
+│
+├── src/test/java/com/example/budgetmanager/
+│   ├── TransactionControllerTest.java   # Test Controller
+│   ├── TransactionServiceTest.java      # Test Service
+```
 
-- **Java 21+** installato sul tuo sistema.
-- **Maven** per la gestione delle dipendenze e la compilazione.
-  
+---
+
+## Dettaglio del Pattern MVC
+
+### **Model** - `Transaction.java`
+Definisce la struttura della tabella `Transaction` nel database e definisce i metodi getter e setter oltre che alcuni metodi per la validazione degli input.
+
+```java
+@Entity
+public class Transaction {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private Double amount;
+    private String category;
+    private String description;
+    private LocalDate date;
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+}
+```
+
+### **View** - Thymeleaf
+Le pagine HTML sono dinamiche e si trovano in `src/main/resources/templates/`.
+- `index.html` → Dashboard con saldo e ultime transazioni.
+- `view_transactions.html` → Lista delle transazioni + Grafico a torta.
+- `add_transaction.html` → Form per aggiungere nuove transazioni.
+- `error.html` → Pagina di errore personalizzata.
+
+
+### **Controller** - `TransactionController.java`
+Gestisce le richieste API REST per il recupero e la gestione delle transazioni.
+
+```java
+@RestController
+@RequestMapping("/api/transactions")
+public class TransactionController {
+    private final TransactionService transactionService;
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+    
+ @PostMapping
+    public ResponseEntity<?> addTransaction(@RequestBody Transaction transaction) {
+        if (transaction.getAmount() == null || transaction.getType() == null) {
+            return ResponseEntity.badRequest().body("Error: amount and type are mandatory.");
+        }
+        Transaction savedTransaction = transactionService.addTransaction(transaction);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTransaction);
+    }
+
+  @GetMapping
+    public ResponseEntity<List<Transaction>> getAllTransactions() {
+        List<Transaction> transactions = transactionService.getAllTransactions();
+        if (transactions.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        
+        return ResponseEntity.ok(transactions);
+    }
+}
+```
+I meotodi implementati sono:
+- `addTransaction(Transaction transation)` per aggiungere una nuova transazione
+- `getAllTransactions()` per recuperare tutte le transazioni
+- `getBalance()` per recuperare il saldo
+- `deleteTransaction(Long id)` per eliminare una transazione
+- `getTransactionById(Long id)` per recuperare una transazione per id
+
+**View Controller** - `TransactionsViewController.java`
+Gestisce la navigazione tra le pagine HTML.
+```java
+@Controller
+@RequestMapping("/")
+public class TransactionsViewController {
+    private final TransactionService transactionService;
+    public TransactionsViewController(TransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+
+    @GetMapping
+    public String homePage(Model model) {
+        List<Transaction> transactions = transactionService.getAllTransactions();
+
+        double balance = transactionService.getBalance();
+        double totalRevenue = transactionService.getTotalRevenue();
+        double totalExpenses = transactionService.getTotalExpenses();
+
+        model.addAttribute("balance", balance);
+        model.addAttribute("totalRevenue", totalRevenue);
+        model.addAttribute("totalExpenses", totalExpenses);
+        model.addAttribute("latestTransactions", transactions.subList(0, Math.min(transactions.size(), 10)));
+
+        return "index";
+    }
+}
+```
+I metodi implementati sono:
+- `homePage(Model model)` per la home page
+- `transactionsPage(Model model)` per la pagina delle transazioni
+- `addTransactionPage(Model model)` per la pagina di aggiunta di una transazione
+- `addTransaction(Transaction transaction)` per aggiungere una nuova transazione
+- `deleteTransaction(Long id)` per eliminare una transazione
+- `handleNotFound()` per gestire le eccezioni 404
+
+**Custom Error Controller** - `CustomErrorController.java`
+Gestisce le eccezioni che si verificano durante la navigazione.
+```java
+@Controller
+public class CustomErrorController implements ErrorController {
+    @GetMapping("/error")
+    public String handleError(HttpServletRequest request, Model model) {
+        Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+        if (status != null) {
+            int statusCode = Integer.parseInt(status.toString());
+            model.addAttribute("statusCode", statusCode);
+        }
+        return "error"; 
+    }
+}
+```
+Grazie a questo controller è possibile gestire le eccezioni 404 e visualizzare un messaggio di errore personalizzato e non la pagina di default.
+
+### **Service** - `TransactionService.java`
+Implementa la logica di business per la gestione delle transazioni e lo svolgimento di alcuni calcoli su di esse.
+
+```java
+@Service
+public class TransactionService {
+    private final TransactionRepository transactionRepository;
+    public TransactionService(TransactionRepository transactionRepository) {
+        this.transactionRepository = transactionRepository;
+    }
+    
+    public double getTotalRevenue() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+            .filter(t -> t.getType() == Transaction.TransactionType.INCOME)
+            .mapToDouble(Transaction::getAmount)
+            .sum();
+    }
+
+    public double getTotalExpenses() {
+        List<Transaction> transactions = transactionRepository.findAll();
+        return transactions.stream()
+            .filter(t -> t.getType() == Transaction.TransactionType.EXPENSE)
+            .mapToDouble(Transaction::getAmount)
+            .sum();
+    }
+
+}
+```
+I metodi implementati sono:
+- `addTransaction(Transaction transaction)` per aggiungere una nuova transazione
+- `getAllTransactions()` per recuperare tutte le transazioni
+- `getTransactionById(Long id)` per recuperare una transazione per id
+- `getBalance()` per recuperare il saldo
+- `getTotalRevenue()` per recuperare il totale delle entrate
+- `getTotalExpenses()` per recuperare il totale delle uscite
+- `getExpensesByCategorySummary()` per recuperare le uscite per categoria
+- `deleteTransaction(Long id)` per eliminare una transazione
+
+---
+
+## Flusso delle Richieste HTTP
+
+1. **L'utente visita la home (`/`)**
+   - `TransactionsViewController` carica il saldo e le ultime transazioni.
+   - `index.html` mostra i dati.
+
+2. **L'utente accede alla lista transazioni (`/transactions`)**
+   - `TransactionsViewController` carica tutte le transazioni.
+   - `view_transactions.html` mostra la tabella + grafico a torta.
+2.1 **L'utente elimina una transazione**
+   - `TransactionController.deleteTransaction()` elimina la transazione dal database.
+   - L'utente viene reindirizzato a `/transactions`.
+
+3. **L'utente aggiunge una nuova transazione**
+   - `TransactionController.addTransaction()` salva la transazione nel database.
+   - L'utente viene reindirizzato a `/transactions`.
+
+4. **L'utente tenta di visitare una pagina non esistente**
+    - `TransactionsViewController` gestisce l'errore 404.
+    - `error.html` mostra il messaggio di errore.
+---
+
 ## Come Eseguire il Progetto
-
-### 1. Clona il repository
-
-```bash
-git clone https://github.com/tuo-username/budget-manager.git
+### Clonare il repository
+```sh
+git clone <repository-url>
 cd budget-manager
 ```
 
-### 2. Compila e avvia l'applicazione
-
-Usa Maven per compilarlo ed eseguirlo:
-
-```bash
+### Compilare ed eseguire
+```sh
 mvn spring-boot:run
 ```
 
-L'applicazione sarà in esecuzione sulla porta predefinita `8080`.
+### Accedere all'applicazione
+- **Dashboard:** [http://localhost:8080/](http://localhost:8080/)
+- **API REST:** [http://localhost:8080/api/transactions](http://localhost:8080/api/transactions)
+- **Database H2 Console:** [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
 
-### 3. Interagire con le API
+---
 
-L'applicazione espone alcune API REST per gestire le transazioni:
+## Conclusione
+Budget Manager fornisce un sito web per la gestione delle finanze personali, combinando **Spring Boot**, **Thymeleaf**, **H2 Database** e un'architettura basata su **MVC**.
 
-- **Aggiungere una transazione**:
-  - **URL**: `POST /api/transactions`
-  - **Body**:
-    ```json
-    {
-      "amount": 100.0,
-      "type": "INCOME"
-    }
-    ```
-  - **Risposta**: Stato HTTP 201 (Created)
 
-- **Visualizzare il balance**:
-  - **URL**: `GET /api/transactions/balance`
-  - **Risposta**: Stato HTTP 200 (OK) con il balance attuale.
+---
 
-- **Visualizzare tutte le transazioni**:
-  - **URL**: `GET /api/transactions`
-  - **Risposta**: Stato HTTP 200 (OK) con l'elenco delle transazioni.
+**Autore:** Francesco Romeo, mat. 885880
 
-- **Visualizzare una transazione specifica**:
-    - **URL**: `GET /api/transactions/{id}`
-    - **Risposta**: Stato HTTP 200 (OK) con i dettagli della transazione.
-
-### 4. Esegui i test
-
-Per eseguire i test, utilizza Maven con il seguente comando:
-
-```bash
-mvn test
-```

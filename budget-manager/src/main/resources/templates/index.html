@@ -73,7 +73,7 @@
                     <td th:text="${transaction.category}">Category</td>
                     <td th:text="${transaction.description}">Description</td>
                     <td th:text="${#numbers.formatDecimal(transaction.amount, 1, 2)}" 
-                        th:classappend="${transaction.type.name() == 'OUTCOME' ? 'text-danger' : 'text-success'}">
+                        th:classappend="${transaction.type.name() == 'EXPENSE' ? 'text-danger' : 'text-success'}">
                         0.00
                     </td>
                 </tr>

@@ -9,7 +9,6 @@ import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 /* ------------------------------------------------------------------
 Controller per gestire le richieste relative alle view
@@ -40,7 +39,12 @@ public class TransactionsViewController {
         model.addAttribute("balance", balance);
         model.addAttribute("totalRevenue", totalRevenue);
         model.addAttribute("totalExpenses", totalExpenses);
-        model.addAttribute("latestTransactions", transactions.subList(0, Math.min(transactions.size(), 10)));
+        List<Transaction> latestTransactions = transactions.subList(0, Math.min(transactions.size(), 10));
+        if(latestTransactions.size() > 0) {
+            model.addAttribute("latestTransactions", latestTransactions);
+        } else {
+            model.addAttribute("latestTransactions", null);
+        }
 
         // Pagina iniziale
         return "index";
@@ -54,7 +58,7 @@ public class TransactionsViewController {
         model.addAttribute("transactions", transactions);
 
         // Dati per il grafico a torta (distribuzione per categoria solo delle spese)
-        Map<String, Double> categoryData = transactionService.getOutcomeCategorySummary();
+        Map<String, Double> categoryData = transactionService.getExpenseCategorySummary();
         model.addAttribute("categories", categoryData.keySet());
         model.addAttribute("categoryAmounts", categoryData.values());
 
@@ -94,13 +98,5 @@ public class TransactionsViewController {
         // Redirect alla pagina delle transazioni (uso redirect per evitare di provare ad eliminare la stessa transazione più volte)
         return "redirect:/transactions";
     }
-
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public String handleNotFound() {
-
-        // Redirect alla pagina di errore
-        return "error";
-    }
-
 
 }
