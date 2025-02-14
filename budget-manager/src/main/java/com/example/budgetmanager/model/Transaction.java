@@ -90,20 +90,23 @@ public class Transaction {
 
     // Metodi di validazione
     private void validateAmount(Double amount, TransactionType type) {
-        if (amount == null || amount == 0) {
-            throw new IllegalArgumentException("The amout can't be 0 or null.");
+        if (amount == 0 || amount == null) {
+            throw new IllegalArgumentException("The amount must be a positive number bigger than 0");
+        }
+        if (type == null || (type != TransactionType.EXPENSE && type != TransactionType.INCOME)) {
+            throw new IllegalArgumentException("The transaction type must be defined as INCOME or EXPENSE.");
         }
     }
 
     private void validateCategory(String category) {
-        if (category == null || category.trim().isEmpty()) {
-            throw new IllegalArgumentException("The category can't be null or empty.");
+        if (category == null) {
+            throw new IllegalArgumentException("The category must be defined.");
         }
     }
 
     private void validateDate(LocalDate date) {
         if (date == null) {
-            throw new IllegalArgumentException("The date can't be null.");
+            throw new IllegalArgumentException("The date must be defined.");
         }
     }
 
