@@ -28,6 +28,9 @@ public class TransactionService {
 
     // Recupera una transazione per ID
     public Optional<Transaction> getTransactionById(Long id) {
+        if (id == null) {
+            return Optional.empty();
+        }
         return transactionRepository.findById(id);
     }
 
