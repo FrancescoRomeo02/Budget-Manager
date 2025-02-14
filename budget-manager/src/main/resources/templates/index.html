@@ -17,14 +17,14 @@
     <div class="container mt-5">
         <!-- Titolo della pagina e bilancio -->
         <div class="text-center">
-            <h1 class="display-4">💸 Budget Management</h1>
+            <h1 class="display-4">Budget Management</h1>
             <a href="/add_transactions" class="btn btn-success btn-lg">+ Add Transaction</a>
             <a href="/transactions" class="btn btn-primary btn-lg">View All Transactions</a>
         </div>
 
         <!-- messaggio di allerta -->
         <div th:if="${balance < 0}" class="alert alert-danger mt-4 text-center" role="alert">
-            ⚠️ Warning! Your balance is negative.
+            Warning! Your balance is negative.
         </div>
 
         <!-- riepilogo del saldo -->
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card" th:classappend="${balance<=0 ? 'border-danger' : 'border-success'}">
+                <div class="card" th:classappend="${balance < 0 ? 'border-danger' : 'border-success'}">
                     <div class="card-body">
                         <h5 class="card-title">Net Balance</h5>
                         <p class="fs-3 fw-bold" th:text="${#numbers.formatDecimal(balance, 1, 2)}" 
