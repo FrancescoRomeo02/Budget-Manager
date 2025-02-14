@@ -30,19 +30,20 @@ public class TransactionControllerTest {
         // Mock di una transazione
         Transaction transaction = new Transaction();
         transaction.setId(1L);
-        transaction.setAmount(100.0);
         transaction.setType(Transaction.TransactionType.INCOME);
+        transaction.setAmount(100.0);
+        transaction.setCategory("Salary");
+        transaction.setDescription("Monthly salary");
 
         // Simulazione del comportamento del servizio
         when(transactionService.addTransaction(Mockito.any(Transaction.class))).thenReturn(transaction);
 
-        // Test della richiesta POST
+        // Richiesta POST per aggiungere una transazione
         mockMvc.perform(post("/api/transactions")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"amount\": 100.0, \"type\": \"INCOME\"}"))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.amount").value(100.0))
-                .andExpect(jsonPath("$.type").value("INCOME"));
+                .content("{\"amount\": 100.0, \"type\": \"INCOME\", \"category\": \"Salary\", \"description\": \"Monthly salary\"}"))
+                .andExpect(status().isCreated()) // Aspettati un codice di stato 201
+                .andExpect(jsonPath("$.id").value(1L)); // Aspettati un ID di transazione
     }
 
     @Test

@@ -246,6 +246,11 @@ mvn spring-boot:run
 - **Dashboard:** [http://localhost:8080/](http://localhost:8080/)
 - **API REST:** [http://localhost:8080/api/transactions](http://localhost:8080/api/transactions)
 
+### Come eseguire i test
+```sh
+mvn test
+```
+
 ---
 
 ## Conclusione

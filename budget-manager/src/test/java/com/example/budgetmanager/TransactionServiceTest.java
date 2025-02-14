@@ -31,8 +31,8 @@ public class TransactionServiceTest {
     void testAddTransaction() {
         // Dati di esempio per una transazione
         Transaction transaction = new Transaction();
-        transaction.setAmount(100.0);
         transaction.setType(Transaction.TransactionType.INCOME);
+        transaction.setAmount(100.0);
         
         // Test del servizio che salva su H2
         Transaction savedTransaction = transactionService.addTransaction(transaction);
@@ -52,18 +52,18 @@ public class TransactionServiceTest {
     void testGetAllTransactions() {
         // Dati di esempio per le transazioni
         Transaction t1 = new Transaction();
+        t1.setType(Transaction.TransactionType.INCOME);
         t1.setAmount(100.0);
         t1.setCategory("Salary");
         t1.setDate(LocalDate.now());
         t1.setDescription("test");
-        t1.setType(Transaction.TransactionType.INCOME);
         
         Transaction t2 = new Transaction();
+        t2.setType(Transaction.TransactionType.EXPENSE);
         t2.setAmount(50.0);
         t2.setCategory("Food");
         t2.setDate(LocalDate.now());
         t2.setDescription("test");
-        t2.setType(Transaction.TransactionType.EXPENSE);
         
         // Salvataggio nel database H2
         transactionRepository.save(t1);
@@ -84,12 +84,12 @@ public class TransactionServiceTest {
     void testGetBalance() {
         // Dati di esempio per le transazioni
         Transaction t1 = new Transaction();
-        t1.setAmount(100.0);
         t1.setType(Transaction.TransactionType.INCOME);
+        t1.setAmount(100.0);
 
         Transaction t2 = new Transaction();
-        t2.setAmount(50.0);
         t2.setType(Transaction.TransactionType.EXPENSE);
+        t2.setAmount(50.0);
 
         // Salvataggio delle transazioni nel database H2
         transactionRepository.save(t1);

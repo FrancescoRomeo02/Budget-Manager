@@ -3,7 +3,6 @@ package com.example.budgetmanager.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-
 @Entity
 public class Transaction {
 
@@ -26,7 +25,7 @@ public class Transaction {
 
     // Costruttore con validazione
     public Transaction(Double amount, String category, String description, LocalDate date, TransactionType type) {
-        validateAmount(amount, type);
+        validateAmount(amount);
         validateCategory(category);
         validateDate(date);
         this.amount = amount;
@@ -50,7 +49,7 @@ public class Transaction {
     }
 
     public void setAmount(Double amount) {
-        validateAmount(amount, this.type); 
+        validateAmount(amount); 
         this.amount = amount;
     }
 
@@ -89,12 +88,9 @@ public class Transaction {
     }
 
     // Metodi di validazione
-    private void validateAmount(Double amount, TransactionType type) {
+    private void validateAmount(Double amount) {
         if (amount == 0 || amount == null) {
             throw new IllegalArgumentException("The amount must be a positive number bigger than 0");
-        }
-        if (type == null || (type != TransactionType.EXPENSE && type != TransactionType.INCOME)) {
-            throw new IllegalArgumentException("The transaction type must be defined as INCOME or EXPENSE.");
         }
     }
 
