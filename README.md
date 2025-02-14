@@ -21,7 +21,7 @@ Il progetto segue un'architettura **MVC (Model-View-Controller)** ben strutturat
 ```
 budget-manager/
 ├── src/main/java/com/example/budgetmanager/
-│   ├── controller/      # Gestisce le richieste HTTP
+│   ├── controller/      # Gestisce le richieste HTTP e API
 │   ├── model/           # Definisce le entità del database
 │   ├── repository/      # Interfaccia per l'accesso ai dati
 │   ├── service/         # Contiene la logica di business
@@ -119,15 +119,14 @@ public class TransactionsViewController {
     public String homePage(Model model) {
         List<Transaction> transactions = transactionService.getAllTransactions();
 
-        double balance = transactionService.getBalance();
-        double totalRevenue = transactionService.getTotalRevenue();
-        double totalExpenses = transactionService.getTotalExpenses();
+        // Attributi per la view
+        model.addAttribute("balance", transactionService.getBalance());
+        model.addAttribute("totalRevenue", transactionService.getTotalRevenue());
+        model.addAttribute("totalExpenses", transactionService.getTotalExpenses());
+        List<Transaction> latestTransactions = transactions.subList(0, Math.min(transactions.size(), 10));
+        model.addAttribute("latestTransactions", latestTransactions.size()>0 ? latestTransactions : null);
 
-        model.addAttribute("balance", balance);
-        model.addAttribute("totalRevenue", totalRevenue);
-        model.addAttribute("totalExpenses", totalExpenses);
-        model.addAttribute("latestTransactions", transactions.subList(0, Math.min(transactions.size(), 10)));
-
+        // Pagina iniziale
         return "index";
     }
 }
@@ -147,10 +146,15 @@ public class CustomErrorController implements ErrorController {
     @GetMapping("/error")
     public String handleError(HttpServletRequest request, Model model) {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
+
         if (status != null) {
             int statusCode = Integer.parseInt(status.toString());
+            String errorMessage = statusCode == 404 ? "Oops! Page not found" : "Oops! An error occurred";
             model.addAttribute("statusCode", statusCode);
+            model.addAttribute("errorMessage", errorMessage);
+
         }
+
         return "error"; 
     }
 }
@@ -218,8 +222,7 @@ Il repository contiene alcune query personalizzate per ottenere il totale delle 
    - `TransactionsViewController` carica tutte le transazioni.
    - `view_transactions.html` mostra la tabella + grafico a torta.
    - **L'utente elimina una transazione**
-   -- `TransactionController.deleteTransaction()` elimina la transazione dal database.
-   -- L'utente viene reindirizzato a `/transactions`.
+    -`TransactionController.deleteTransaction()` elimina la transazione dal database.
 
 3. **L'utente aggiunge una nuova transazione**
    - `TransactionController.addTransaction()` salva la transazione nel database.
