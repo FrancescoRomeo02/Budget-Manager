@@ -248,6 +248,7 @@ mvn spring-boot:run
 
 ### Come eseguire i test
 ```sh
+cd budget-manager
 mvn test
 ```
 
