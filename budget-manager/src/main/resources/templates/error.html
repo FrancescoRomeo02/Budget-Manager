@@ -29,8 +29,8 @@
 <body>
     <div class="container-fluid error-container">
         <div>
-            <h1 class="text-danger">404</h1>
-            <p class="lead">Oops! What you were looking for is not here!</p>
+            <h1 class="text-danger" th:text="${statusCode}">404</h1>
+            <p class="lead" th:text="${errorMessage}">Oops! What you were looking for is not here!</p>
             <a href="/" class="btn btn-primary btn-lg">Back to Home</a>
         </div>
     </div>

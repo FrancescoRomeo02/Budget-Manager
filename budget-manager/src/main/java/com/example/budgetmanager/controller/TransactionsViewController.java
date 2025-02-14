@@ -1,10 +1,10 @@
 package com.example.budgetmanager.controller;
 
-import com.example.budgetmanager.model.Transaction;
-import com.example.budgetmanager.service.TransactionService;
-
 import java.util.List;
 import java.util.Map;
+
+import com.example.budgetmanager.model.Transaction;
+import com.example.budgetmanager.service.TransactionService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,21 +30,12 @@ public class TransactionsViewController {
     public String homePage(Model model) {
         List<Transaction> transactions = transactionService.getAllTransactions();
 
-        // Dati per il riepilogo
-        double balance = transactionService.getBalance();
-        double totalRevenue = transactionService.getTotalRevenue();
-        double totalExpenses = transactionService.getTotalExpenses();
-
         // Attributi per la view
-        model.addAttribute("balance", balance);
-        model.addAttribute("totalRevenue", totalRevenue);
-        model.addAttribute("totalExpenses", totalExpenses);
+        model.addAttribute("balance", transactionService.getBalance());
+        model.addAttribute("totalRevenue", transactionService.getTotalRevenue());
+        model.addAttribute("totalExpenses", transactionService.getTotalExpenses());
         List<Transaction> latestTransactions = transactions.subList(0, Math.min(transactions.size(), 10));
-        if(latestTransactions.size() > 0) {
-            model.addAttribute("latestTransactions", latestTransactions);
-        } else {
-            model.addAttribute("latestTransactions", null);
-        }
+        model.addAttribute("latestTransactions", latestTransactions.size()>0 ? latestTransactions : null);
 
         // Pagina iniziale
         return "index";
@@ -54,20 +45,12 @@ public class TransactionsViewController {
     public String transactionsPage(Model model) {
         
         // Dati per la tabella
-        List<Transaction> transactions = transactionService.getAllTransactions();
-        model.addAttribute("transactions", transactions);
+        model.addAttribute("transactions", transactionService.getAllTransactions());
 
         // Dati per il grafico a torta (distribuzione per categoria solo delle spese)
         Map<String, Double> categoryData = transactionService.getExpenseCategorySummary();
         model.addAttribute("categories", categoryData.keySet());
         model.addAttribute("categoryAmounts", categoryData.values());
-
-        // Dati per il riepilogo
-        double totalRevenue = transactionService.getTotalRevenue();
-        double totalExpenses = transactionService.getTotalExpenses();
-
-        model.addAttribute("totalRevenue", totalRevenue);
-        model.addAttribute("totalExpenses", totalExpenses);
 
         // Dati per il saldo
         model.addAttribute("balance", transactionService.getBalance());
