@@ -28,7 +28,7 @@ budget-manager/
 │   └── BudgetManagerApplication.java  # Classe principale
 │
 ├── src/main/resources/
-│   ├── templates/       # Pagine HTML con Thymeleaf
+│   ├── templates/              # Pagine HTML con Thymeleaf
 │   ├── application.properties  # Configurazione del database H2
 │
 ├── src/test/java/com/example/budgetmanager/
