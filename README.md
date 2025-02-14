@@ -237,8 +237,8 @@ Il repository contiene alcune query personalizzate per ottenere il totale delle 
 ## Come Eseguire il Progetto
 ### Clonare il repository
 ```sh
-git clone <https://gitlab.com/f.romeo23/budget-manager>
-cd budget-manager
+git clone https://gitlab.com/f.romeo23/budget-manager
+cd budget-manager/budget-manager
 ```
 
 ### Compilare ed eseguire
@@ -252,7 +252,7 @@ mvn spring-boot:run
 
 ### Come eseguire i test
 ```sh
-cd budget-manager
+cd budget-manager/budget-manager
 mvn test
 ```
 
