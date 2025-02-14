@@ -1,23 +1,24 @@
 # Budget Manager
 
 ## Introduzione
-Budget Manager è un'applicazione web sviluppata in **Java** con **Spring Boot** per la gestione delle finanze personali. Permette di **registrare transazioni**, **monitorare entrate e uscite** e **visualizzare il saldo** in tempo reale.
+Budget Manager è una web app sviluppata in **Java** utilizzando **Spring Boot** che permette la gestione delle finanze personali. 
+Attraverso il sito possiamo: **registrare le nostre transazioni**, **monitorare le ostre entrate e uscite** e **visualizzare il saldo** in tempo reale.
 
 ## Tecnologie Utilizzate
-- **Java 17**
-- **Spring Boot 3** (MVC, Data JPA)
+- **Java 21**
+- **Spring Boot 3.4.2** (MVC, Data JPA)
 - **Thymeleaf** (per la parte View)
 - **H2 Database** (per la persistenza dei dati)
-- **Bootstrap 5** (UI responsiva)
+- **Bootstrap 5** (UI semplice e responsive)
 - **Chart.js** (grafico a torta per la distribuzione delle spese)
 - **JUnit 5** (test unitari e di integrazione)
 
 ---
 
 ## Architettura del Progetto
-Il progetto segue un'architettura **MVC (Model-View-Controller)** ben strutturata.
+Il progetto segue le linee guida dell'architettura **MVC (Model-View-Controller)** per garantire una separazione chiara tra la logica di business, la presentazione e la gestione delle richieste HTTP e API.
 
-### **Struttura delle Cartelle**
+### **Struttura del Progetto**
 ```
 budget-manager/
 ├── src/main/java/com/example/budgetmanager/
@@ -41,7 +42,7 @@ budget-manager/
 ## Dettaglio del Pattern MVC
 
 ### **Model** - `Transaction.java`
-Definisce la struttura della tabella `Transaction` nel database e definisce i metodi getter e setter oltre che alcuni metodi per la validazione degli input.
+Questo file definisce la struttura della tabella `Transaction` nel database oltre che definire getter e setter ed alcuni metodi per la validazione degli input.
 
 ```java
 @Entity
@@ -61,8 +62,8 @@ public class Transaction {
 ### **View** - Thymeleaf
 Le pagine HTML sono dinamiche e si trovano in `src/main/resources/templates/`.
 - `index.html` → Dashboard con saldo e ultime transazioni.
-- `view_transactions.html` → Lista delle transazioni + Grafico a torta.
-- `add_transaction.html` → Form per aggiungere nuove transazioni.
+- `view_transactions.html` → Lista delle transazioni + Grafico a torta delle spese.
+- `add_transaction.html` → Form per aggiungere nuove transazioni, una alla volta.
 - `error.html` → Pagina di errore personalizzata.
 
 
@@ -99,10 +100,10 @@ public class TransactionController {
 }
 ```
 I meotodi implementati sono:
-- `addTransaction(Transaction transation)` per aggiungere una nuova transazione
-- `getAllTransactions()` per recuperare tutte le transazioni
-- `deleteTransaction(Long id)` per eliminare una transazione
-- `getTransactionById(Long id)` per recuperare una transazione per id
+- `addTransaction(Transaction transation)` per aggiungere una nuova transazione.
+- `getAllTransactions()` per recuperare tutte le transazioni.
+- `deleteTransaction(Long id)` per eliminare una transazione.
+- `getTransactionById(Long id)` per recuperare una transazione per id.
 
 **View Controller** - `TransactionsViewController.java`
 Gestisce la navigazione tra le pagine HTML.
@@ -132,11 +133,11 @@ public class TransactionsViewController {
 }
 ```
 I metodi implementati sono:
-- `homePage(Model model)` per la home page
-- `transactionsPage(Model model)` per la pagina delle transazioni
-- `addTransactionPage(Model model)` per la pagina di aggiunta di una transazione
-- `addTransaction(Transaction transaction)` per aggiungere una nuova transazione
-- `deleteTransaction(Long id)` per eliminare una transazione
+- `homePage(Model model)` per visualizzare la home page ed ottenere i dati necessari.
+- `transactionsPage(Model model)` per visualizzare la pagina delle transazioni ed ottenere i dati necessari.
+- `addTransactionPage(Model model)` per navigare alla pagina di aggiunta di una transazione.
+- `addTransaction(Transaction transaction)` per gestire l'aggiunta una nuova transazione.
+- `deleteTransaction(Long id)` per gestire l'eliminazione una transazione.
 
 **Custom Error Controller** - `CustomErrorController.java`
 Gestisce le eccezioni che si verificano durante la navigazione.
@@ -183,14 +184,14 @@ public class TransactionService {
 }
 ```
 I metodi implementati sono:
-- `addTransaction(Transaction transaction)` per aggiungere una nuova transazione
-- `getAllTransactions()` per recuperare tutte le transazioni
-- `getTransactionById(Long id)` per recuperare una transazione per id
-- `getBalance()` per recuperare il saldo
-- `getTotalRevenue()` per recuperare il totale delle entrate
-- `getTotalExpenses()` per recuperare il totale delle uscite
-- `getExpensesByCategorySummary()` per recuperare le uscite per categoria
-- `deleteTransaction(Long id)` per eliminare una transazione
+- `addTransaction(Transaction transaction)` per aggiungere una nuova transazione.
+- `getAllTransactions()` per recuperare tutte le transazioni.
+- `getTransactionById(Long id)` per recuperare una transazione per id.
+- `getBalance()` per recuperare il saldo.
+- `getTotalRevenue()` per recuperare il totale delle entrate.
+- `getTotalExpenses()` per recuperare il totale delle uscite.
+- `getExpensesByCategorySummary()` per recuperare le uscite per categoria.
+- `deleteTransaction(Long id)` per eliminare una transazione.
 
 ### **Repository** - `TransactionRepository.java`
 ```java
@@ -254,12 +255,6 @@ mvn spring-boot:run
 cd budget-manager
 mvn test
 ```
-
----
-
-## Conclusione
-Budget Manager fornisce un sito web per la gestione delle finanze personali, combinando **Spring Boot**, **Thymeleaf**, **H2 Database** e un'architettura basata su **MVC**.
-
 
 ---
 
