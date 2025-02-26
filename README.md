@@ -1,48 +1,48 @@
-# Budget Manager
+# Responsible for the budget
 
-## Introduzione
-Budget Manager è una web app sviluppata in **Java** utilizzando **Spring Boot** che permette la gestione delle finanze personali. 
-Attraverso il sito possiamo: **registrare le nostre transazioni**, **monitorare le ostre entrate e uscite** e **visualizzare il saldo** in tempo reale.
+## Introduction
+Budget Manager is a web app developed in **Java** using **Spring Boot** that allows you to manage personal finances. 
+Through the site we can: **record our transactions**, **monitor our income and expenses** and **view the balance** in real time.
 
-## Tecnologie Utilizzate
-- **Java 21**
-- **Spring Boot 3.4.2** (MVC, Data JPA)
-- **Thymeleaf** (per la parte View)
-- **H2 Database** (per la persistenza dei dati)
-- **Bootstrap 5** (UI semplice e responsive)
-- **Chart.js** (grafico a torta per la distribuzione delle spese)
-- **JUnit 5** (test unitari e di integrazione)
+## Technologies Used
+- **Java21**
+- **Spring Boot 3.4.2** (MVC, JPA data)
+- **Thymeleaf** (part view)
+- **H2 Database** (for data persistence)
+- **Bootstrap 5** (simple and responsive user interface)
+- **Chart.js** (pie chart for expense distribution)
+- **JUnit 5** (unit and integration tests)
 
 ---
 
-## Architettura del Progetto
-Il progetto segue le linee guida dell'architettura **MVC (Model-View-Controller)** per garantire una separazione chiara tra la logica di business, la presentazione e la gestione delle richieste HTTP e API.
+## Project Architecture
+The project follows **MVC (Model-View-Controller)** architecture guidelines to ensure a clear separation between business logic, presentation and management of HTTP and API requests.
 
-### **Struttura del Progetto**
+### **Project Structure**
 ```
 budget-manager/
 ├── src/main/java/com/example/budgetmanager/
-│   ├── controller/      # Gestisce le richieste HTTP e API
-│   ├── model/           # Definisce le entità del database
-│   ├── repository/      # Interfaccia per l'accesso ai dati
-│   ├── service/         # Contiene la logica di business
-│   └── BudgetManagerApplication.java  # Classe principale
+│ ├── controller/ # Handles HTTP and API requests
+│ ├── model/ # Defines the database entities
+│ ├── repository/ # Interface for accessing data
+│ ├── service/ # Contains the business logic
+│ └── BudgetManagerApplication.java # Main class
 │
 ├── src/main/resources/
-│   ├── templates/              # Pagine HTML con Thymeleaf
-│   ├── application.properties  # Configurazione del database H2
+│ ├── templates/ # HTML pages with Thymeleaf
+│ ├── application.properties # H2 database configuration
 │
 ├── src/test/java/com/example/budgetmanager/
-│   ├── TransactionControllerTest.java   # Test Controller
-│   ├── TransactionServiceTest.java      # Test Service
+│ ├── TransactionControllerTest.java # Test Controller
+│ ├── TransactionServiceTest.java # Test Service
 ```
 
 ---
 
-## Dettaglio del Pattern MVC
+## Detail of the MVC Pattern
 
 ### **Model** - `Transaction.java`
-Questo file definisce la struttura della tabella `Transaction` nel database oltre che definire getter e setter ed alcuni metodi per la validazione degli input.
+This file defines the structure of the `Transaction` table in the database as well as defining getters and setters and some methods for validating inputs.
 
 ```java
 @Entity
@@ -58,17 +58,16 @@ public class Transaction {
     private TransactionType type;
 }
 ```
-
 ### **View** - Thymeleaf
-Le pagine HTML sono dinamiche e si trovano in `src/main/resources/templates/`.
-- `index.html` → Dashboard con saldo e ultime transazioni.
-- `view_transactions.html` → Lista delle transazioni + Grafico a torta delle spese.
-- `add_transaction.html` → Form per aggiungere nuove transazioni, una alla volta.
-- `error.html` → Pagina di errore personalizzata.
+HTML pages are dynamic and are located in `src/main/resources/templates/`.
+- `index.html` → Dashboard with balance and latest transactions.
+- `view_transactions.html` → List of transactions + Pie chart of expenses.
+- `add_transaction.html` → Form to add new transactions, one at a time.
+- `error.html` → Custom error page.
 
 
 ### **Controller** - `TransactionController.java`
-Gestisce le richieste API REST per il recupero e la gestione delle transazioni.
+Handles REST API requests for retrieving and managing transactions.
 
 ```java
 @RestController
@@ -99,14 +98,14 @@ public class TransactionController {
     }
 }
 ```
-I meotodi implementati sono:
-- `addTransaction(Transaction transation)` per aggiungere una nuova transazione.
-- `getAllTransactions()` per recuperare tutte le transazioni.
-- `deleteTransaction(Long id)` per eliminare una transazione.
-- `getTransactionById(Long id)` per recuperare una transazione per id.
+The methods implemented are:
+- `addTransaction(Transaction transaction)` to add a new transaction.
+- `getAllTransactions()` to retrieve all transactions.
+- `deleteTransaction(Long id)` to delete a transaction.
+- `getTransactionById(Long id)` to retrieve a transaction by id.
 
 **View Controller** - `TransactionsViewController.java`
-Gestisce la navigazione tra le pagine HTML.
+Manages navigation between HTML pages.
 ```java
 @Controller
 @RequestMapping("/")
@@ -132,15 +131,15 @@ public class TransactionsViewController {
     }
 }
 ```
-I metodi implementati sono:
-- `homePage(Model model)` per visualizzare la home page ed ottenere i dati necessari.
-- `transactionsPage(Model model)` per visualizzare la pagina delle transazioni ed ottenere i dati necessari.
-- `addTransactionPage(Model model)` per navigare alla pagina di aggiunta di una transazione.
-- `addTransaction(Transaction transaction)` per gestire l'aggiunta una nuova transazione.
-- `deleteTransaction(Long id)` per gestire l'eliminazione una transazione.
+The implemented methods are:
+- `homePage(Model model)` to display the home page and obtain the necessary data.
+- `transactionsPage(Model model)` to display the transactions page and obtain the necessary data.
+- `addTransactionPage(Model model)` to navigate to the add transaction page.
+- `addTransaction(Transaction transaction)` to handle adding a new transaction.
+- `deleteTransaction(Long id)` to handle deleting a transaction.
 
 **Custom Error Controller** - `CustomErrorController.java`
-Gestisce le eccezioni che si verificano durante la navigazione.
+Handles exceptions that occur during browsing.
 ```java
 @Controller
 public class CustomErrorController implements ErrorController {
@@ -160,10 +159,10 @@ public class CustomErrorController implements ErrorController {
     }
 }
 ```
-Grazie a questo controller è possibile gestire le eccezioni 404 e visualizzare un messaggio di errore personalizzato e non la pagina di default.
+Thanks to this controller it is possible to manage 404 exceptions and display a customized error message and not the default page.
 
 ### **Service** - `TransactionService.java`
-Implementa la logica di business per la gestione delle transazioni e lo svolgimento di alcuni calcoli su di esse.
+It implements business logic for handling transactions and performing some calculations on them.
 
 ```java
 @Service
@@ -183,15 +182,15 @@ public class TransactionService {
 
 }
 ```
-I metodi implementati sono:
-- `addTransaction(Transaction transaction)` per aggiungere una nuova transazione.
-- `getAllTransactions()` per recuperare tutte le transazioni.
-- `getTransactionById(Long id)` per recuperare una transazione per id.
-- `getBalance()` per recuperare il saldo.
-- `getTotalRevenue()` per recuperare il totale delle entrate.
-- `getTotalExpenses()` per recuperare il totale delle uscite.
-- `getExpensesByCategorySummary()` per recuperare le uscite per categoria.
-- `deleteTransaction(Long id)` per eliminare una transazione.
+The implemented methods are:
+- `addTransaction(Transaction transaction)` to add a new transaction.
+- `getAllTransactions()` to retrieve all transactions.
+- `getTransactionById(Long id)` to retrieve a transaction by id.
+- `getBalance()` to get the balance.
+- `getTotalRevenue()` to get the total revenue.
+- `getTotalExpenses()` to get the total expenses.
+- `getExpensesByCategorySummary()` to retrieve expenses by category.
+- `deleteTransaction(Long id)` to delete a transaction.
 
 ### **Repository** - `TransactionRepository.java`
 ```java
@@ -209,48 +208,47 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     List<Object[]> getExpenseCategorySummary();
 }
 ```
-Il repository contiene alcune query personalizzate per ottenere il totale delle entrate, il totale delle spese e un riepilogo per categoria delle spese in modo da semplificare la logica di business.
+The repository contains some custom queries to get total revenue, total expenses, and a category summary of expenses to simplify your business logic.
 
 ---
 
-## Flusso delle Richieste HTTP
+## HTTP Request Flow
 
-1. **L'utente visita la home (`/`)**
-   - `TransactionsViewController` carica il saldo e le ultime transazioni.
-   - `index.html` mostra i dati.
+1. **The user visits the home page (`/`)**
+   - `TransactionsViewController` loads the balance and latest transactions.
+   - `index.html` displays data.
 
-2. **L'utente accede alla lista transazioni (`/transactions`)**
-   - `TransactionsViewController` carica tutte le transazioni.
-   - `view_transactions.html` mostra la tabella + grafico a torta.
-   - **L'utente elimina una transazione**
-    -`TransactionController.deleteTransaction()` elimina la transazione dal database.
+2. **User accesses the transactions list (`/transactions`)**
+   - `TransactionsViewController` loads all transactions.
+   - `view_transactions.html` shows table + pie chart.
+   - **User deletes a transaction**
+    -`TransactionController.deleteTransaction()` deletes the transaction from the database.
 
-3. **L'utente aggiunge una nuova transazione**
-   - `TransactionController.addTransaction()` salva la transazione nel database.
-   - L'utente viene reindirizzato a `/transactions`.
+3. **User adds a new transaction**
+   - `TransactionController.addTransaction()` saves the transaction to the database.
+   - The user is redirected to `/transactions`.
 
-4. **L'utente tenta di visitare una pagina non esistente**
-    - `TransactionsViewController` gestisce l'errore 404.
-    - `error.html` mostra il messaggio di errore.
+4. **The user tries to visit a non-existing page**
+    - `TransactionsViewController` handles 404 error.
+    - `error.html` shows the error message.
 ---
-
-## Come Eseguire il Progetto
-### Clonare il repository
+## How to Run the Project
+### Clone the repository
 ```sh
 git clone https://gitlab.com/f.romeo23/budget-manager
 cd budget-manager/budget-manager
 ```
 
-### Compilare ed eseguire
+### Compile and run
 ```sh
 mvn spring-boot:run
 ```
 
-### Accedere all'applicazione
+### Log in to the application
 - **Dashboard:** [http://localhost:8080/](http://localhost:8080/)
-- **API REST:** [http://localhost:8080/api/transactions](http://localhost:8080/api/transactions)
+- **REST API:** [http://localhost:8080/api/transactions](http://localhost:8080/api/transactions)
 
-### Come eseguire i test
+### How to run tests
 ```sh
 cd budget-manager/budget-manager
 mvn test
@@ -258,5 +256,5 @@ mvn test
 
 ---
 
-**Autore:** Francesco Romeo, mat. 885880
+**Author:** Francesco Romeo, mat. 885880
 
